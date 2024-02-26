@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Bright Lights</title>
+</head>
+<body><center>
+<canvas id="click" width="1024" height="768" style="border: 1px solid;" onclick="audio('a');"></canvas></center>
+<script>
+    var canvas = document.getElementById("click");
+    var code = canvas.getContext('2d');
+
+    var a = new Audio('audio/bub2.mp3');
+
+    var bgm = new Audio('audio/bg.ogg');
+
+    function bg() {
+        bgm.loop = true;
+        bgm.play();
+    }
+
+    //initialWidth = canvas.width = window.innerWidth;
+    //initialHeight = canvas.height = window.innerHeight;
+
+    function Circle(x, y, r, c) { //Particle generator
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.c = c;
+
+        this.dx = Math.floor(Math.random() * 4) + 0.2;
+        this.dx *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
+        this.dy = Math.floor(Math.random() * 4) + 0.2;
+        this.dy *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
+
+        this.draw = function () {
+            code.beginPath();
+            code.fillStyle = this.c;
+            code.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            code.fill();
+        }
+
+        this.animate = function () {
+            this.x += this.dx;
+            this.y += this.dy;
+
+            if (this.x + this.r > canvas.width || this.x - this.r < 0) {
+                this.dx = -this.dx;
+            }
+
+            if (this.y + this.r > canvas.height || this.y - this.r < 0) {
+                this.dy = -this.dy;
+            }
+
+            this.draw();
+        }
+    }
+    
+    var c = ['rgba(255, 0, 0, 1)', 'rgba(0,0,255, 1)', 'rgba(0,255,0,1)']; //Colors 1
+    var C = ['rgba(255, 0, 0, 1)', 'rgba(0,0,255, 1)', 'rgba(0,255,0,1)']; //Colors 2
+
+    function col(c) { //Color Generator 1
+        return c[Math.floor(Math.random() * c.length)];
+    };
+
+    function Col(c) { //Color Generator 2
+        return c[Math.floor(Math.random() * c.length)];
+    };
+
+    var particles = []; //Array for particles
+    for (var i = 0; i < 25; i++) {
+        var r = Math.floor(Math.random() * 30) + 15;
+        var x = (Math.random() * (canvas.width - r * 2)) + r;
+        var y = (Math.random() * (canvas.height - r * 2)) + r;
+        var c = this.col(c);
+        particles.push(new Circle(x, y, r, this.c));
+    }
+
+    canvas.addEventListener('click', function (e) { //Particle Generator OnClick Event
+        r = Math.floor(Math.random() * 15) + 15;
+        c = Col(C);
+        particles.push(new Circle((e.clientX = e.clientX - 155), e.clientY, r, c));
+
+        a.play();
+        a.currentTime = 0
+    });
+
+    function Update() { //Animation
+        code.clearRect(0, 0, canvas.width, canvas.height);
+        code.fillStyle = "#212121";
+        code.fillRect(0, 0, canvas.width, canvas.height);
+
+        code.globalCompositeOperation = "lighter";
+
+        for (var i = 0; i < particles.length; i++) {
+            var ball = particles[i];
+            ball.animate();
+        }
+        requestAnimationFrame(Update);
+        bg();
+    }
+
+    Update();
+</script>
+</body>
+</html>
